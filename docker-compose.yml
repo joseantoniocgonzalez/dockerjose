@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:10.5
+    container_name: ${DB_CONTAINER_NAME:-biblioteca_db}
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-biblioteca_db}
+      MYSQL_USER: ${MYSQL_USER:-biblioteca_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-biblioteca_pass}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - biblioteca_net
+
+  app:
+    build: .
+    container_name: ${APP_CONTAINER_NAME:-biblioteca_app}
+    restart: always
+    ports:
+      - "${APP_PORT:-8081}:80"
+    depends_on:
+      - mariadb
+    environment:
+      BASE_URL: ${BASE_URL:-http://localhost:8081/}
+      DB_HOST: ${DB_HOST:-mariadb}
+      DB_USER: ${MYSQL_USER:-biblioteca_user}
+      DB_PASS: ${MYSQL_PASSWORD:-biblioteca_pass}
+      DB_NAME: ${MYSQL_DATABASE:-biblioteca_db}
+    volumes:
+      - ./logs:/var/log/apache2
+    networks:
+      - biblioteca_net
+
+volumes:
+  mariadb_data:
+  logs:
+
+networks:
+  biblioteca_net:
