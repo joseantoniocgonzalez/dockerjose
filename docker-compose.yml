@@ -16,7 +16,7 @@ services:
       - biblioteca_net
 
   app:
-    build: .
+    image: joseantoniocgonzalez/biblioteca_app:v3  # Asegúrate de que esté apuntando a la imagen correcta
     container_name: ${APP_CONTAINER_NAME:-biblioteca_app}
     restart: always
     ports:
@@ -35,8 +35,9 @@ services:
       - biblioteca_net
 
 volumes:
-  mariadb_data:
-  logs:
+  mariadb_data: {}  # Asegúrate de que el volumen esté correctamente declarado aquí
+  logs: {}
 
 networks:
   biblioteca_net:
+    driver: bridge
